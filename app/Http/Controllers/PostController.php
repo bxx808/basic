@@ -6,9 +6,22 @@ use App\Http\Requests\Post\PostStoreRequest;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Rubric;
+use App\Services\Post\PostStoreService;
+use App\Services\Post\PostUpdateService;
 
 class PostController extends Controller
 {
+    private PostStoreService $postStoreService;
+    private PostUpdateService $postUpdateService;
+    public function __construct(
+        PostStoreService $postStoreService,
+        PostUpdateService $postUpdateService
+    )
+    {
+        $this->postStoreService = $postStoreService;
+        $this->postUpdateService = $postUpdateService;
+    }
+
     public function index()
     {
         $posts = Post::all();
@@ -31,13 +44,7 @@ class PostController extends Controller
     public function update(PostStoreRequest $request, Post $post)
     {
         $data = $request->validated();
-        $post->update([
-            'title' => $data['title'],
-            'content' => $data['content'],
-            'category_id' => $data['category_id'],
-            'image' => $data['image']
-        ]);
-        $post->rubrics()->sync($data['rubrics']);
+        $this->postUpdateService->execute($post, $data);
         return redirect()->route('post.show', $post->id);
     }
 
@@ -50,13 +57,7 @@ class PostController extends Controller
     public function store(PostStoreRequest $request)
     {
         $data = $request->validated();
-        $post = Post::create([
-            'title' => $data['title'],
-            'content' => $data['content'],
-            'category_id' => $data['category_id'],
-            'image' => $data['image']
-        ]);
-        $post->rubrics()->attach($data['rubrics']);
+        $this->postStoreService->execute($data);
         return redirect()->route('post.index');
     }
 
