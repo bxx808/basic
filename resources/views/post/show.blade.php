@@ -21,7 +21,9 @@
                             {{$rubric->name}}
                         @endforeach
                     </td>
-                    <td></td>
+                    <td>
+                        <img src="{{$post->image}}" alt="">
+                    </td>
                 </tr>
             </tbody>
         </table>
