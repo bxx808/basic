@@ -1,0 +1,10 @@
+@import 'bootstrap';
+@import "bootstrap-icons/font/bootstrap-icons.css";
+$linkColor:  #8e2424;
+a{
+    color: $linkColor;
+    &:hover{
+        text-decoration: none;
+    }
+}
+
