@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Post\PostStoreRequest;
 use App\Models\Category;
 use App\Models\Post;
-use App\Models\PostToRubric;
 use App\Models\Rubric;
-use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
@@ -29,15 +28,9 @@ class PostController extends Controller
         ]);
     }
 
-    public function update(Post $post)
+    public function update(PostStoreRequest $request, Post $post)
     {
-        $data = request()->validate([
-            'title' => 'string|min:4|required',
-            'content' => 'string',
-            'category_id' => 'integer|exists:categories,id',
-            'rubrics' => 'array|exists:rubrics,id',
-            'image' => 'string'
-        ]);
+        $data = $request->validated();
         $post->update([
             'title' => $data['title'],
             'content' => $data['content'],
@@ -54,29 +47,15 @@ class PostController extends Controller
         return redirect()->route('post.index');
     }
 
-    public function store()
+    public function store(PostStoreRequest $request)
     {
-        $data = request()->validate([
-            'title' => 'string|min:4|required',
-            'content' => 'string',
-            'category_id' => 'integer|exists:categories,id',
-            'rubrics' => 'array|exists:rubrics,id',
-            'image' => 'string'
-        ]);
-//        $rubrics = $data['rubrics'];
-//        unset($data['rubrics']);
+        $data = $request->validated();
         $post = Post::create([
             'title' => $data['title'],
             'content' => $data['content'],
             'category_id' => $data['category_id'],
             'image' => $data['image']
         ]);
-//        foreach ($data['rubrics'] as $rubric) {
-//            PostToRubric::firstOrCreate([
-//                'post_id' => $post->id,
-//                'rubric_id' => $rubric
-//            ]);
-//        }
         $post->rubrics()->attach($data['rubrics']);
         return redirect()->route('post.index');
     }
