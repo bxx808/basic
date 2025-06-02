@@ -1,7 +1,9 @@
 @extends('layout')
 
 @section('content')
-    <a href="{{route('post.create')}}" class="btn btn-outline-success btn-lg mb-3">Создать</a>
+    @if(auth()->user()->role == 'admin')
+        <a href="{{route('post.create')}}" class="btn btn-outline-success btn-lg mb-3">Создать</a>
+    @endif
     <div class="">
         <table class="table">
             <thead>
@@ -26,16 +28,18 @@
                         <a href="{{route('post.show', $post->id)}}" class="btn btn-primary">
                             <i class="bi bi-eye"></i>
                         </a>
-                        <a href="{{route('post.edit', $post->id)}}" class="btn btn-warning">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <form action="{{route('post.destroy', $post->id)}}" method="POST">
-                            @csrf
-                            @method('delete')
-                            <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
+                        @if(auth()->user()->role == 'admin')
+                            <a href="{{route('post.edit', $post->id)}}" class="btn btn-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form action="{{route('post.destroy', $post->id)}}" method="POST">
+                                @csrf
+                                @method('delete')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
             @endforeach
