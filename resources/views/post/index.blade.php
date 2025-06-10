@@ -1,3 +1,6 @@
+@php
+    $queryId = request()->query('category-id');
+@endphp
 @extends('layout')
 
 @section('content')
@@ -8,12 +11,35 @@
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
-                <th scope="col">Category</th>
-                <th scope="col"></th>
+                <form method="get" action="{{route('post.index', request()->fullUrl())}}">
+                    <th scope="col">#</th>
+                    <th scope="col">
+                        Заголовок
+                        <input type="text" name="title" class="form-control"  value="{{request()->get('title')}}">
+
+                        @if(request()->has('title'))
+                            <a href="{{route('post.index', request()->except('title'))}}">X</a>
+                        @endif
+                    </th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                    <th scope="col">
+                        Категория
+                        <select class="form-control" name="category-id">
+                            @foreach($categories as $category)
+                                <option
+                                    {{(int) $queryId === $category->id ? " selected " : " "}} value="{{$category->id}}">
+                                    {{$category->name}}
+                                </option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="btn btn-success">&#10004;</button>
+                        @if(request()->has('category-id'))
+                            <a href="{{route('post.index', request()->except('category-id'))}}">X</a>
+                        @endif
+                    </th>
+                    <th scope="col"></th>
+                </form>
             </tr>
             </thead>
             <tbody>
@@ -45,6 +71,6 @@
             @endforeach
             </tbody>
         </table>
-        {{$posts->links('vendor.pagination.bootstrap-4')}}
+        {{$posts->withQueryString()->links('vendor.pagination.bootstrap-4')}}
     </div>
 @endsection

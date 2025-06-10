@@ -2,32 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Post\Filters\SearchPostFilterRequest;
 use App\Http\Requests\Post\PostStoreRequest;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Rubric;
+use App\Services\Post\PostPaginateService;
 use App\Services\Post\PostStoreService;
 use App\Services\Post\PostUpdateService;
+
 
 class PostController extends Controller
 {
     private PostStoreService $postStoreService;
     private PostUpdateService $postUpdateService;
+
+    private PostPaginateService $postPaginateService;
+
     public function __construct(
-        PostStoreService $postStoreService,
-        PostUpdateService $postUpdateService
+        PostStoreService    $postStoreService,
+        PostUpdateService   $postUpdateService,
+        PostPaginateService $postPaginateService
     )
     {
         $this->postStoreService = $postStoreService;
         $this->postUpdateService = $postUpdateService;
+        $this->postPaginateService = $postPaginateService;
     }
 
-    public function index()
+    public function index(SearchPostFilterRequest $request)
     {
-        $posts = Post::paginate(3);
+        $data = $request->validated();
+        $posts = $this->postPaginateService->execute($data);
         return view('post.index', [
-            'posts' => $posts
-
+            'posts' => $posts,
+            'categories' => Category::all()
         ]);
     }
 
